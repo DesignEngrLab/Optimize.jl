@@ -1,16 +1,19 @@
 abstract Optimizer
 
 immutable Options{TCallback <: Union{Void, Function}}
+  ϵ_f::Float64
   ϵ_x::Float64
   max_iterations::Int
   callback::TCallback
 end
 
 function Options(;
+  ϵ_f = 0.0005,
   ϵ_x = 0.0005,
   max_iterations = 1000,
   callback = nothing)
   return Options{typeof(callback)}(
+    ϵ_f,
     ϵ_x,
     max_iterations,
     callback

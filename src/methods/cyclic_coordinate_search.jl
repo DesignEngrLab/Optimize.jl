@@ -13,7 +13,7 @@ type CyclicCoordinateSearchState{T}
   x_k::Array{T}
   x_last::Array{T}
   x_acc::Array{T}
-  dir::Array{T}
+  d_k::Array{T}
 end
 
 function initial_state{T}(method::CyclicCoordinateSearch, problem::Problem{T}, options::Options)
@@ -31,7 +31,7 @@ end
 
 function update_state!{T}(method::CyclicCoordinateSearch, problem::Problem{T}, options::Options, state::CyclicCoordinateSearchState)
   n, n_k = state.n, state.n_k
-  x_k, x_last, x_acc, dir = state.x_k, state.x_last, state.x_acc, state.dir
+  x_k, x_last, x_acc, d_k = state.x_k, state.x_last, state.x_acc, state.d_k
 
   # Keep track of last iteration's coordinate
   copy!(x_last, x_k)
@@ -47,7 +47,7 @@ function update_state!{T}(method::CyclicCoordinateSearch, problem::Problem{T}, o
     end
 
     for i = 1:n
-      dir[i] = i == n_k ? 1.0 : 0.0
+      d_k[i] = i == n_k ? 1.0 : 0.0
     end
 
     # If acceleration isn't used, reset the cycle
@@ -57,15 +57,15 @@ function update_state!{T}(method::CyclicCoordinateSearch, problem::Problem{T}, o
       state.n_k += 1
     end
   else
-    copy!(dir, x_k - x_acc)
+    copy!(d_k, x_k - x_acc)
     state.n_k = 1
   end
 
   # Find minimizing distance along search direction
-  α_k = lineSearch(x -> problem.objective(x_k + x * dir))
+  α_k = lineSearch(x -> problem.objective(x_k + x * d_k))
 
   # Update the minimizer to the new minimum
-  copy!(x_k, x_k + α_k * dir)
+  copy!(x_k, x_k + α_k * d_k)
 
   # Check for convergence
   converged = norm(x_k - x_last) < options.ϵ_x
