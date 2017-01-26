@@ -39,6 +39,7 @@ immutable Results{T}
   converged::Bool
   convergence_criteria::Float64
   function_calls::FunctionCalls
+  elapsed_time::Real
 end
 
 function Base.show(io::IO, results::Results)
@@ -48,6 +49,7 @@ function Base.show(io::IO, results::Results)
   @printf io " * Minimum: %e\n" results.minimum
   @printf io " * Iterations: %d\n" results.iterations
   @printf io " * Converged: %s\n" results.converged ? "true" : "false"
-  @printf io " * Objective Function Calls: %d" results.function_calls.objective
+  @printf io " * Objective Function Calls: %d\n" results.function_calls.objective
+  @printf io " * Elapsed time: %f seconds" results.elapsed_time
   return
 end

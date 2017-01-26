@@ -28,6 +28,9 @@ function optimize{T}(method::Method, problem::Problem{T}, options::Options)
   call_state = FunctionCalls(0)
   problem = instrument_problem(problem, call_state)
 
+  # Start timing now
+  tic()
+
   state = initial_state(method, problem)
 
   while true
@@ -48,6 +51,8 @@ function optimize{T}(method::Method, problem::Problem{T}, options::Options)
     iteration += 1
   end
 
+  elapsed_time = toq()
+
   return Results(
     state.method_name,
     problem.x_initial,
@@ -56,7 +61,8 @@ function optimize{T}(method::Method, problem::Problem{T}, options::Options)
     iteration,
     converged,
     options.ϵ_x,
-    call_state
+    call_state,
+    elapsed_time
   )
 end
 
