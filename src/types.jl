@@ -1,4 +1,5 @@
-abstract Optimizer
+abstract Method
+abstract State
 
 immutable Options{TCallback <: Union{Void, Function}}
   ϵ_f::Float64
@@ -8,8 +9,8 @@ immutable Options{TCallback <: Union{Void, Function}}
 end
 
 function Options(;
-  ϵ_f = 0.0005,
-  ϵ_x = 0.0005,
+  ϵ_f = 1e-16,
+  ϵ_x = 1e-16,
   max_iterations = 1000,
   callback = nothing)
   return Options{typeof(callback)}(
@@ -22,7 +23,7 @@ end
 
 immutable Problem{T}
   objective::Function
-  initial_x::Array{T}
+  x_initial::Array{T}
 end
 
 type FunctionCalls
@@ -31,7 +32,7 @@ end
 
 immutable Results{T}
   method_name::String
-  initial_x::Array{T}
+  x_initial::Array{T}
   minimizer::Array{T}
   minimum::T
   iterations::Int
@@ -47,7 +48,6 @@ function Base.show(io::IO, results::Results)
   @printf io " * Minimum: %e\n" results.minimum
   @printf io " * Iterations: %d\n" results.iterations
   @printf io " * Converged: %s\n" results.converged ? "true" : "false"
-  @printf io " * Convergence Criteria: ║xₖ - xₖ₊₁║ ≤ %e\n" results.convergence_criteria
   @printf io " * Objective Function Calls: %d" results.function_calls.objective
   return
 end

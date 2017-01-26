@@ -1,48 +1,53 @@
-immutable Rosenbrock <: Optimizer
-  initial_step_size::Float32
-  forward_step_multiplier::Float32
-  backward_step_multiplier::Float32
+immutable Rosenbrock <: Method
+  initial_step_size::Real
+  forward_step_multiplier::Real
+  backward_step_multiplier::Real
+  ϵ_h::Real
 end
 
 function Rosenbrock(;
   initial_step_size = 0.5,
   forward_step_multiplier = 5.0,
-  backward_step_multiplier = 0.5)
+  backward_step_multiplier = 0.5,
+  ϵ_h = 1e-8)
   return Rosenbrock(
     initial_step_size,
     forward_step_multiplier,
-    backward_step_multiplier
+    backward_step_multiplier,
+    ϵ_h
   )
 end
 
-type RosenbrockState{T,N}
+type RosenbrockState{T,N} <: State
   method_name::String
   n::Int                      # Number of design variables / search dimensions
   n_k::Int                    # Current iteration dimension
   x_k::Array{T,1}             # Current search coordinate
   f_k::T                      # Current coordinate's objective function value
   h_k::Array{T}               # Array of current step sizes for each dimension
+  h_ave::T                    # Starting step size for the current stage
   d_k::Array{T,N}             # Array of current search directions
   a_k::Array{T,1}             # Array of distances traveled in each direction
   trial_results::BitArray{2}  # Record of success/failures in each direction
 end
 
-function initial_state{T}(method::Rosenbrock, problem::Problem{T}, options::Options)
-  n = length(problem.initial_x)
+function initial_state{T}(method::Rosenbrock, problem::Problem{T})
+  n = length(problem.x_initial)
   return RosenbrockState(
     "Rosenbrock's Method",
     n,
     1,
-    copy(problem.initial_x),
-    problem.objective(problem.initial_x),
+    copy(problem.x_initial),
+    problem.objective(problem.x_initial),
     fill(convert(T, method.initial_step_size), n),
+    method.initial_step_size,
     eye(n),
-    zeros(problem.initial_x),
+    zeros(problem.x_initial),
     falses(2, n)
   )
 end
 
-function update_state!{T}(method::Rosenbrock, problem::Problem{T}, options::Options, state::RosenbrockState)
+function update_state!{T}(method::Rosenbrock, problem::Problem{T}, state::RosenbrockState)
   f, n = problem.objective, state.n
   x_k, h_k, a_k, d_k = state.x_k, state.h_k, state.a_k, state.d_k
   trial_results = state.trial_results
@@ -65,7 +70,7 @@ function update_state!{T}(method::Rosenbrock, problem::Problem{T}, options::Opti
       # Take a larger step in the next trial for this direction
       h_k[state.n_k] *= method.forward_step_multiplier
 
-      return false
+      return (x_k, state.f_k)
     else
       # Record a failure in the current direction
       trial_results[2, state.n_k] = true
@@ -92,18 +97,18 @@ function update_state!{T}(method::Rosenbrock, problem::Problem{T}, options::Opti
   end
 
   # Start the next stage with a step size based on the last distance travelled
-  h_ave = 1/n * sum(abs(a_k))
-  fill!(h_k, h_ave)
+  state.h_ave = 1/n * sum(abs(a_k))
+  fill!(h_k, state.h_ave)
   fill!(a_k, 0)
-
-  # Convergence is based on step size
-  if (h_ave < options.ϵ_f)
-    return true
-  end
 
   # Reset the success/failure state to start next stage
   fill!(trial_results, false)
 
   # Start directional search again
-  return update_state!(method, problem, options, state)
+  return update_state!(method, problem, state)
+end
+
+function has_converged{T}(method::Rosenbrock, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::RosenbrockState)
+  # Convergence is based on step size
+  return state.h_ave < method.ϵ_h
 end
