@@ -15,7 +15,7 @@ function HookeAndJeeves(;
   )
 end
 
-type HookeAndJeevesState{T} <: State
+type HookeAndJeevesState{T,N} <: State
   method_name::String
   n::Int
   n_k::Int
@@ -23,48 +23,45 @@ type HookeAndJeevesState{T} <: State
   f_k::T
   x_k::Array{T}
   x_b::Array{T}
+  d_k::Array{T,N}
 end
 
 function initial_state{T}(method::HookeAndJeeves, problem::Problem{T})
+  n = length(problem.x_initial)
   return HookeAndJeevesState(
     "Hooke and Jeeves",
-    length(problem.x_initial),
+    n,
     1,
     method.initial_step_size,
     problem.objective(problem.x_initial),
     copy(problem.x_initial),
-    copy(problem.x_initial)
+    copy(problem.x_initial),
+    eye(n)
   )
 end
 
 function update_state!{T}(method::HookeAndJeeves, problem::Problem{T}, state::HookeAndJeevesState)
   f, n = problem.objective, state.n
   x_k, x_b = state.x_k, state.x_b
-  f_last = state.f_k
 
   # Evaluate a positive and a negative point in each cardinal direction
   # and update as soon as one is found
   while state.n_k <= n
-    d_k = [i == state.n_k ? 1.0 : 0.0 for i in 1:n]
-    state.n_k += 1
-
     # Arbitrarily choose the positive direction first
-    copy!(x_k, x_k + state.h_k * d_k)
-    state.f_k = f(x_k)
+    for dir in [1,-1]
+      x_trial = x_k + dir * state.h_k * state.d_k[:,state.n_k]
+      f_trial = f(x_trial)
 
-    # If the point is better, don't bother checking the other direction
-    if (state.f_k <= f_last)
-      return (x_k, state.f_k)
+      # If the point is better, immediately go there
+      if (f_trial <= state.f_k)
+        copy!(x_k, x_trial)
+        state.f_k = f_trial
+        state.n_k += 1
+        return (x_k, state.f_k)
+      end
     end
 
-    # Check the other direction
-    copy!(x_k, x_k - state.h_k * d_k)
-    state.f_k = f(x_k)
-
-    # Use the point as long as it's not worse
-    if (state.f_k <= f_last)
-      return (x_k, state.f_k)
-    end
+    state.n_k += 1
   end
 
   # If the cardinal direction searches did not improve, reduce the
@@ -73,14 +70,16 @@ function update_state!{T}(method::HookeAndJeeves, problem::Problem{T}, state::Ho
     state.h_k *= method.step_reduction
   end
 
-  # Move in an acceleration based direction
-  copy!(x_k, 2x_k - x_b)
+  # Attempt to move in an acceleration based direction
+  x_trial = 2x_k - x_b
+  f_trial = f(x_trial)
   copy!(x_b, x_k)
-  state.f_k = f(x_k)
   state.n_k = 1
 
   # If the point is an improvement use it
-  if state.f_k <= f_last
+  if f_trial <= state.f_k
+    copy!(x_k, x_trial)
+    state.f_k = f_trial
     return (x_k, state.f_k)
   end
 
