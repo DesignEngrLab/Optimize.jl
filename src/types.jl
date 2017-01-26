@@ -42,6 +42,13 @@ immutable Results{T}
   elapsed_time::Real
 end
 
+immutable ExampleProblem{T}
+  f::Function
+  x_initial::Array{T}
+  x_range::Range
+  y_range::Range
+end
+
 function Base.show(io::IO, results::Results)
   @printf io "Optimization Results\n"
   @printf io " * Algorithm: %s\n" results.method_name

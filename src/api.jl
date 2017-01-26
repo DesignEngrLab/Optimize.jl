@@ -57,7 +57,7 @@ function optimize{T}(method::Method, problem::Problem{T}, options::Options)
     state.method_name,
     problem.x_initial,
     state.x_k,
-    f(state.x_k),
+    problem.objective(state.x_k),
     iteration,
     converged,
     options.ϵ_x,

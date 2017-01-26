@@ -1,27 +1,32 @@
 using Optimize
 using Plots
+include("utils/plotting.jl")
+include("utils/problems.jl")
+
+# Replace this with whichever plotting backend you prefer
 plotlyjs()
 
-x_0 = [0.0,0.0]
-f(x) = (x[2] - x[1]^2)^2 + (x[1] - 4)^2
+# Choose an example problem, see utils/problems.jl
+example = example_problems[:easom]
 
-x = -5:0.1:5
-y = -5:0.1:20
-X = repmat(x',length(y),1)
-Y = repmat(y,1,length(x))
-Z = map((x1, x2) -> f([x1, x2]),X,Y)
-p = contour(x,y,Z)
-plot(p)
+# Plot the objective function contours
+plot_range(example.f, example.x_range, example.y_range)
 
-points = [x_0]
-add_point(i, state) = push!(points, copy(state.x_k))
+# Keep track of each iteration's search coordinates
+coords = []
+add_coord(k, x_k, f_k) = push!(coords, x_k)
 
-method = CyclicCoordinateSearch(use_acceleration = false)
-prob = Problem(f, x_0)
-opts = Options(callback = add_point)
+# Construct the search parameters
+method = Rosenbrock()
+prob = Problem(example.f, example.x_initial)
+opts = Options(callback = add_coord)
 
+# Run the search
 result = optimize(method, prob, opts)
+
+# Print the results
 println(result)
 
-plot!([(x[1], x[2]) for x in points])
+# Plot the results
+plot_coords(coords)
 gui()
