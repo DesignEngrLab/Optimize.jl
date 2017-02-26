@@ -8,7 +8,6 @@ end
 
 type CyclicCoordinateSearchState{T} <: State
   method_name::String
-  n::Int
   n_k::Int
   x_k::Array{T}
   x_last::Array{T}
@@ -17,10 +16,9 @@ type CyclicCoordinateSearchState{T} <: State
 end
 
 function initial_state{T}(method::CyclicCoordinateSearch, problem::Problem{T})
-  n = length(problem.x_initial)
+  n = problem.dimensions
   return CyclicCoordinateSearchState(
     "Cyclic Coordinate Search",
-    n,
     1,
     copy(problem.x_initial),
     Array{T}(n),
@@ -30,7 +28,7 @@ function initial_state{T}(method::CyclicCoordinateSearch, problem::Problem{T})
 end
 
 function update_state!{T}(method::CyclicCoordinateSearch, problem::Problem{T}, state::CyclicCoordinateSearchState)
-  n, n_k = state.n, state.n_k
+  n, n_k = problem.dimensions, state.n_k
   x_k, x_last, x_acc, d_k = state.x_k, state.x_last, state.x_acc, state.d_k
 
   # Keep track of last iteration's coordinate

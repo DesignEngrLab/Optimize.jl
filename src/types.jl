@@ -24,7 +24,16 @@ end
 immutable Problem{T}
   objective::Function
   x_initial::Array{T}
+  dimensions::Int
 end
+
+function Problem{T}(objective::Function, x_initial::Array{T})
+   Problem(objective, x_initial, length(x_initial))
+ end
+
+function Problem(objective::Function, dimensions::Int)
+   Problem(objective, zeros(dimensions), dimensions)
+ end
 
 type FunctionCalls
   objective::Int

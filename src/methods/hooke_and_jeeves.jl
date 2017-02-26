@@ -17,7 +17,6 @@ end
 
 type HookeAndJeevesState{T,N} <: State
   method_name::String
-  n::Int
   n_k::Int
   h_k::Real
   f_k::T
@@ -27,10 +26,9 @@ type HookeAndJeevesState{T,N} <: State
 end
 
 function initial_state{T}(method::HookeAndJeeves, problem::Problem{T})
-  n = length(problem.x_initial)
+  n = problem.dimensions
   return HookeAndJeevesState(
     "Hooke and Jeeves",
-    n,
     1,
     method.initial_step_size,
     problem.objective(problem.x_initial),
@@ -41,7 +39,7 @@ function initial_state{T}(method::HookeAndJeeves, problem::Problem{T})
 end
 
 function update_state!{T}(method::HookeAndJeeves, problem::Problem{T}, state::HookeAndJeevesState)
-  f, n = problem.objective, state.n
+  f, n = problem.objective, problem.dimensions
   x_k, x_b = state.x_k, state.x_b
 
   # Evaluate a positive and a negative point in each cardinal direction

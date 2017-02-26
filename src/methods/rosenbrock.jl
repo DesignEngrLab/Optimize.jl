@@ -20,7 +20,6 @@ end
 
 type RosenbrockState{T,N} <: State
   method_name::String
-  n::Int                      # Number of design variables / search dimensions
   n_k::Int                    # Current iteration dimension
   x_k::Array{T,1}             # Current search coordinate
   f_k::T                      # Current coordinate's objective function value
@@ -32,10 +31,9 @@ type RosenbrockState{T,N} <: State
 end
 
 function initial_state{T}(method::Rosenbrock, problem::Problem{T})
-  n = length(problem.x_initial)
+  n = problem.dimensions
   return RosenbrockState(
     "Rosenbrock's Method",
-    n,
     1,
     copy(problem.x_initial),
     problem.objective(problem.x_initial),
@@ -48,7 +46,7 @@ function initial_state{T}(method::Rosenbrock, problem::Problem{T})
 end
 
 function update_state!{T}(method::Rosenbrock, problem::Problem{T}, state::RosenbrockState)
-  f, n = problem.objective, state.n
+  f, n = problem.objective, problem.dimensions
   x_k, h_k, a_k, d_k = state.x_k, state.h_k, state.a_k, state.d_k
   trial_results = state.trial_results
 
