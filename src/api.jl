@@ -10,11 +10,11 @@ function instrument_problem{T}(problem::Problem{T}, calls::FunctionCalls)
   )
 end
 
-function optimize{T}(method::Method, problem::Problem{T})
+function optimize{T}(method::Optimizer, problem::Problem{T})
   return optimize(method, problem, Options())
 end
 
-function optimize{T}(method::Method, problem::Problem{T}, options::Options)
+function optimize{T}(method::Optimizer, problem::Problem{T}, options::Options)
   iteration = 1
   converged = false
   x_cur, x_prev = copy(problem.x_initial), zeros(problem.x_initial)
@@ -66,7 +66,7 @@ function optimize{T}(method::Method, problem::Problem{T}, options::Options)
   )
 end
 
-function has_converged{T}(method::Method, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::State)
+function has_converged{T}(method::Optimizer, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::State)
   return has_converged(x..., options) || has_converged(f..., options)
 end
 

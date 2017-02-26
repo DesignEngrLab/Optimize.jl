@@ -1,4 +1,4 @@
-immutable CyclicCoordinateSearch <: Method
+immutable CyclicCoordinateSearch <: Optimizer
   use_acceleration::Bool
 end
 

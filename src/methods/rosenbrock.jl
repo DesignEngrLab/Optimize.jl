@@ -1,4 +1,4 @@
-immutable Rosenbrock <: Method
+immutable Rosenbrock <: Optimizer
   initial_step_size::Real
   forward_step_multiplier::Real
   backward_step_multiplier::Real

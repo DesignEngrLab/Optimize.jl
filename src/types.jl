@@ -1,4 +1,4 @@
-abstract Method
+abstract Optimizer
 abstract State
 
 immutable Options{TCallback <: Union{Void, Function}}

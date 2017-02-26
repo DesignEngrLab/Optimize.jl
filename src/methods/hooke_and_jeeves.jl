@@ -1,4 +1,4 @@
-immutable HookeAndJeeves <: Method
+immutable HookeAndJeeves <: Optimizer
   initial_step_size::Real
   step_reduction::Real
   ϵ_h::Real
