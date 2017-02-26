@@ -2,10 +2,11 @@
 
 Optimization methods implemented in [Julia](http://julialang.org/). Architecture heavily inspired by the [Optim.jl package](https://github.com/JuliaOpt/Optim.jl).
 
-Currently only 3 direct search methods are implemented:
+Currently 4 direct search methods are implemented:
 - [Cyclic Coordinate Search](https://en.wikipedia.org/wiki/Coordinate_descent)
 - Hooke and Jeeves
 - [Rosenbrock's Method](http://www.applied-mathematics.net/optimization/rosenbrock.html)
+- Exhaustive Search
 
 ## Installation
 
@@ -72,6 +73,13 @@ The `Method` struct identifies the method to use to solve the optimization probl
   )
   ```
 
+- Exhaustive Search
+  ```julia
+  method = ExhaustiveSearch(
+    search_space = 0:0.1:1          # Single range or array of ranges defining search grid
+  )
+  ```
+
 An optional argument to `optimize` provides global search options:
 
 ```julia
@@ -103,4 +111,4 @@ The [`examples/` directory](https://github.com/slindberg/Optimize.jl/tree/master
 
 ## Tests
 
-Nope. This is a learning project
+Nope, this is a quick and dirty learning project.

@@ -6,6 +6,7 @@ module Optimize
   include("methods/cyclic_coordinate_search.jl")
   include("methods/hooke_and_jeeves.jl")
   include("methods/rosenbrock.jl")
+  include("methods/exhaustive_search.jl")
   include("methods/line_search.jl")
 
   export
@@ -15,5 +16,6 @@ module Optimize
     CyclicCoordinateSearch
     HookeAndJeeves
     Rosenbrock
+    ExhaustiveSearch
     test_problems
 end

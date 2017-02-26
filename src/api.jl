@@ -44,8 +44,8 @@ function optimize{T}(method::Optimizer, problem::Problem{T}, options::Options)
   return Results(
     state.method_name,
     problem.x_initial,
-    state.x_k,
-    problem.objective(state.x_k),
+    x_cur,
+    f_cur,
     iteration,
     converged,
     options.ϵ_x,
