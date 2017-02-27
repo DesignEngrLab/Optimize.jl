@@ -1,6 +1,7 @@
 module Optimize
   include("types.jl")
   include("api.jl")
+  include("test_problems.jl")
 
   include("methods/cyclic_coordinate_search.jl")
   include("methods/hooke_and_jeeves.jl")
@@ -14,4 +15,5 @@ module Optimize
     CyclicCoordinateSearch
     HookeAndJeeves
     Rosenbrock
+    test_problems
 end

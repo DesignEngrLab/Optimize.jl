@@ -1,25 +1,18 @@
 using Optimize
 using Plots
 include("utils/plotting.jl")
-include("utils/problems.jl")
 
 # Replace this with whichever plotting backend you prefer
 plotlyjs()
 
-# Choose an example problem, see utils/problems.jl
-example = example_problems[:easom]
-
-# Plot the objective function contours
-plot_range(example.f, example.x_range, example.y_range)
-
-# Keep track of each iteration's search coordinates
-coords = []
-add_coord(k, x_k, f_k) = push!(coords, x_k)
+# Choose an example problem, see src/test_problems.jl
+example = test_problems[:easom]
+f, x_0 = example.f, example.x_initial
 
 # Construct the search parameters
 method = Rosenbrock()
-prob = Problem(example.f, example.x_initial)
-opts = Options(callback = add_coord)
+prob = Problem(f, x_0)
+opts = Options(store_trace = true)
 
 # Run the search
 result = optimize(method, prob, opts)
@@ -27,6 +20,10 @@ result = optimize(method, prob, opts)
 # Print the results
 println(result)
 
-# Plot the results
-plot_coords(coords)
+# Plot the objective function contours and results
+X, Y = example.x_range, example.y_range
+plot_range(f, X, Y)
+plot_points(result.trace.evaluations)
+plot_points(result.trace.iterations, true)
+plot!(xlims = X, ylims = Y)
 gui()
