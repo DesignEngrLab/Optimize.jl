@@ -10,12 +10,12 @@ module Optimize
   include("methods/line_search.jl")
 
   export
-    optimize
-    Problem
-    Options
-    CyclicCoordinateSearch
-    HookeAndJeeves
-    Rosenbrock
-    ExhaustiveSearch
+    optimize,
+    Problem,
+    Options,
+    CyclicCoordinateSearch,
+    HookeAndJeeves,
+    Rosenbrock,
+    ExhaustiveSearch,
     test_problems
 end
