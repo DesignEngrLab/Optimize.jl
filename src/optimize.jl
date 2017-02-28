@@ -6,6 +6,7 @@ module Optimize
   include("methods/cyclic_coordinate_search.jl")
   include("methods/hooke_and_jeeves.jl")
   include("methods/rosenbrock.jl")
+  include("methods/random_hill_climbing.jl")
   include("methods/exhaustive_search.jl")
   include("methods/line_search.jl")
 
@@ -16,6 +17,7 @@ module Optimize
     CyclicCoordinateSearch,
     HookeAndJeeves,
     Rosenbrock,
+    RandomHillClimbing,
     ExhaustiveSearch,
     test_problems
 end

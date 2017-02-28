@@ -2,15 +2,16 @@
 
 Optimization methods implemented in [Julia](http://julialang.org/). Architecture heavily inspired by the [Optim.jl package](https://github.com/JuliaOpt/Optim.jl).
 
-Currently 4 direct search methods are implemented:
+Currently 5 direct search methods are implemented:
 - [Cyclic Coordinate Search](https://en.wikipedia.org/wiki/Coordinate_descent)
 - Hooke and Jeeves
 - [Rosenbrock's Method](http://www.applied-mathematics.net/optimization/rosenbrock.html)
+- [Random Hill Climbing](https://en.wikipedia.org/wiki/Hill_climbing)
 - Exhaustive Search
 
 ## Installation
 
-This package is not published, since it is a learning project and doesn't provide anything that doesn't already exist in the plethora of [Julia packages](http://pkg.julialang.org/). To use these methdods, clone the git repository:
+This package is not published, since it is a learning project and doesn't provide anything that doesn't already exist in the plethora of [Julia packages](http://pkg.julialang.org/). To use these methods, clone the git repository:
 
 ```sh
 > git clone git@github.com:slindberg/Optimize.jl.git
@@ -70,6 +71,14 @@ The `Method` struct identifies the method to use to solve the optimization probl
     forward_step_multiplier = 5.0,  # Step size expansion factor, should be > 1
     backward_step_multiplier = 0.5, # Step size reduction factor, should be > 0 and < 1
     ϵ_h = 1e-8                      # Minimum step size, used to determine convergence
+  )
+  ```
+
+- Random Hill Climbing
+  ```julia
+  method = RandomHillClimbing(
+    step_sizes = [ 0.1 ],           # Distances to neighboring coordinates
+    max_failed_neighbors = 2*n*s-1  # Max number of unimproved neighbors before search is stopped
   )
   ```
 
