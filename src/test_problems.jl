@@ -1,4 +1,6 @@
 # See: https://en.wikipedia.org/wiki/Test_functions_for_optimization
+# See: http://infinity77.net/global_optimization/test_functions.html
+# See: http://al-roomi.org/benchmarks/unconstrained/n-dimensions/
 test_problems = Dict(
   :rosenbrock => TestProblem(
     x -> (x[2] - x[1]^2)^2 + (x[1] - 4)^2,
