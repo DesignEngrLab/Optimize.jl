@@ -1,10 +1,7 @@
-function plot_range(f, x, y, step_size = 0.1)
-  x = x[1]:step_size:x[2]
-  y = y[1]:step_size:y[2]
-  X = repmat(x', length(y), 1)
-  Y = repmat(y, 1, length(x))
-  Z = map((x1, x2) -> f([x1, x2]),X,Y)
-  p = contour(x,y,Z)
+function plot_range(f, x, y, n = 100, l = 50)
+  x = linspace(x[1], x[2], n)
+  y = linspace(y[1], y[2], n)
+  p = contour(x, y, (x, y) -> f([x, y]); levels = l)
   plot!(p)
 end
 
@@ -14,6 +11,7 @@ function plot_points(points, show_line = false)
     markershape = :circle,
     markersize = 2,
     markerstrokecolor = nothing,
-    linewidth = show_line ? 1 : 0
+    linewidth = show_line ? 1 : 0,
+    legend = false
   )
 end
