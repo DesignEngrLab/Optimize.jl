@@ -27,7 +27,7 @@ function initial_state{T}(method::CyclicCoordinateSearch, problem::Problem{T})
   )
 end
 
-function update_state!{T}(method::CyclicCoordinateSearch, problem::Problem{T}, state::CyclicCoordinateSearchState)
+function update_state!{T}(method::CyclicCoordinateSearch, problem::Problem{T}, iteration::Int, state::CyclicCoordinateSearchState)
   n, n_k = problem.dimensions, state.n_k
   @fields x_k, x_last, x_acc, d_k = state
 

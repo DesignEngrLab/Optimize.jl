@@ -45,7 +45,7 @@ function initial_state{T}(method::Rosenbrock, problem::Problem{T})
   )
 end
 
-function update_state!{T}(method::Rosenbrock, problem::Problem{T}, state::RosenbrockState)
+function update_state!{T}(method::Rosenbrock, problem::Problem{T}, iteration::Int, state::RosenbrockState)
   f, n = problem.objective, problem.dimensions
   @fields x_k, h_k, a_k, d_k, trial_results = state
 
@@ -102,7 +102,7 @@ function update_state!{T}(method::Rosenbrock, problem::Problem{T}, state::Rosenb
   fill!(trial_results, false)
 
   # Start directional search again
-  return update_state!(method, problem, state)
+  return update_state!(method, problem, iteration, state)
 end
 
 function has_converged{T}(method::Rosenbrock, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::RosenbrockState)

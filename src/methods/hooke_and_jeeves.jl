@@ -38,7 +38,7 @@ function initial_state{T}(method::HookeAndJeeves, problem::Problem{T})
   )
 end
 
-function update_state!{T}(method::HookeAndJeeves, problem::Problem{T}, state::HookeAndJeevesState)
+function update_state!{T}(method::HookeAndJeeves, problem::Problem{T}, iteration::Int, state::HookeAndJeevesState)
   f, n = problem.objective, problem.dimensions
   x_k, x_b = state.x_k, state.x_b
 
@@ -82,7 +82,7 @@ function update_state!{T}(method::HookeAndJeeves, problem::Problem{T}, state::Ho
   end
 
   # Otherwise search in the cardinal directions again
-  return update_state!(method, problem, state)
+  return update_state!(method, problem, iteration, state)
 end
 
 function has_converged{T}(method::HookeAndJeeves, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::HookeAndJeevesState)

@@ -34,7 +34,7 @@ function initial_state{T}(method::RandomHillClimbing, problem::Problem{T})
   )
 end
 
-function update_state!{T}(method::RandomHillClimbing, problem::Problem{T}, state::RandomHillClimbingState)
+function update_state!{T}(method::RandomHillClimbing, problem::Problem{T}, iteration::Int, state::RandomHillClimbingState)
   f, n = problem.objective, problem.dimensions
   @fields x_k, x_n, f_k = state
   @fields failed_neighbors, max_failed_neighbors, last_neighbor = state

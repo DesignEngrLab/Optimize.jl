@@ -22,7 +22,7 @@ function optimize{T}(method::Optimizer, problem::Problem{T}, options::Options)
   state = initial_state(method, problem)
 
   while true
-    x_cur, f_cur = update_state!(method, problem, state)
+    x_cur, f_cur = update_state!(method, problem, iteration, state)
 
     if options.store_trace
       trace!(method, trace, iteration, x_cur, f_cur, options, state)

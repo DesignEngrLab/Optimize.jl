@@ -34,7 +34,7 @@ function initial_state{T}(method::ExhaustiveSearch, problem::Problem{T})
   )
 end
 
-function update_state!{T}(method::ExhaustiveSearch, problem::Problem{T}, state::ExhaustiveSearchState)
+function update_state!{T}(method::ExhaustiveSearch, problem::Problem{T}, iteration::Int, state::ExhaustiveSearchState)
   f, n = problem.objective, problem.dimensions
   x_k = state.x_k
   grid = state.grid
