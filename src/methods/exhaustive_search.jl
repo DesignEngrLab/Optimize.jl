@@ -10,7 +10,8 @@ end
 type ExhaustiveSearchState{T} <: State
   method_name::String
   grid::Array{FloatRange{T},1}  # Search grid, array of ranges for each dim
-  x_k::Array{T,1}               # Current search coordinate
+  i_k::Array{Int,1}             # Current grid index
+  x_k::Array{T,1}               # Corresponding search coordinate
   x_best::Array{T,1}            # Current best coord
   f_best::T                     # Value at best coord
   is_complete::Bool             # Whether every gridpoint has been evaluated
@@ -27,6 +28,7 @@ function initial_state{T}(method::ExhaustiveSearch, problem::Problem{T})
   return ExhaustiveSearchState(
     "Exhaustive Search",
     grid,
+    ones(Int, n),
     map(first, grid),
     zeros(n),
     Inf,
@@ -36,7 +38,7 @@ end
 
 function update_state!{T}(method::ExhaustiveSearch, problem::Problem{T}, iteration::Int, state::ExhaustiveSearchState)
   f, n = problem.objective, problem.dimensions
-  x_k = state.x_k
+  i_k, x_k = state.i_k, state.x_k
   grid = state.grid
 
   f_k = f(x_k)
@@ -47,13 +49,15 @@ function update_state!{T}(method::ExhaustiveSearch, problem::Problem{T}, iterati
   end
 
   for i = 1:n
-    if x_k[i] < last(grid[i])
-      x_k[i] += step(grid[i])
+    if i_k[i] < length(grid[i])
+      i_k[i] += 1
+      x_k[i] = grid[i][i_k[i]]
       break;
     elseif i == n
       state.is_complete = true
     else
       for j = 1:i
+        i_k[i] = 1
         x_k[j] = first(grid[j])
       end
     end
