@@ -47,8 +47,7 @@ end
 
 function update_state!{T}(method::Rosenbrock, problem::Problem{T}, state::RosenbrockState)
   f, n = problem.objective, problem.dimensions
-  x_k, h_k, a_k, d_k = state.x_k, state.h_k, state.a_k, state.d_k
-  trial_results = state.trial_results
+  @fields x_k, h_k, a_k, d_k, trial_results = state
 
   while !all(trial_results)
     x_trial = x_k + h_k[state.n_k] * d_k[:,state.n_k]

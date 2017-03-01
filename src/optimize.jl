@@ -1,4 +1,5 @@
 module Optimize
+  include("macros.jl")
   include("types.jl")
   include("api.jl")
   include("test_problems.jl")

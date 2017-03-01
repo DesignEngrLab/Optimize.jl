@@ -29,7 +29,7 @@ end
 
 function update_state!{T}(method::CyclicCoordinateSearch, problem::Problem{T}, state::CyclicCoordinateSearchState)
   n, n_k = problem.dimensions, state.n_k
-  x_k, x_last, x_acc, d_k = state.x_k, state.x_last, state.x_acc, state.d_k
+  @fields x_k, x_last, x_acc, d_k = state
 
   # Keep track of last iteration's coordinate
   copy!(x_last, x_k)

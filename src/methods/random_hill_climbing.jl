@@ -36,12 +36,10 @@ end
 
 function update_state!{T}(method::RandomHillClimbing, problem::Problem{T}, state::RandomHillClimbingState)
   f, n = problem.objective, problem.dimensions
-  x_k, x_n, f_k = state.x_k, state.x_n, state.f_k
+  @fields x_k, x_n, f_k = state
+  @fields failed_neighbors, max_failed_neighbors, last_neighbor = state
   step_sizes = method.step_sizes
   n_steps = length(step_sizes)
-  failed_neighbors = state.failed_neighbors
-  max_failed_neighbors = state.max_failed_neighbors
-  last_neighbor = state.last_neighbor
 
   # Reverse the direction of the last neighbor
   last_neighbor += iseven(last_neighbor) ? 1 : -1
