@@ -1,4 +1,4 @@
-immutable HookeAndJeeves <: Optimizer
+struct HookeAndJeeves <: Optimizer
   initial_step_size::Real
   step_reduction::Real
   ϵ_h::Real
@@ -15,7 +15,7 @@ function HookeAndJeeves(;
   )
 end
 
-type HookeAndJeevesState{T,N} <: State
+mutable struct HookeAndJeevesState{T,N} <: State
   method_name::String
   n_k::Int
   h_k::Real

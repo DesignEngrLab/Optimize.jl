@@ -1,4 +1,4 @@
-immutable Rosenbrock <: Optimizer
+struct Rosenbrock <: Optimizer
   initial_step_size::Real
   forward_step_multiplier::Real
   backward_step_multiplier::Real
@@ -18,7 +18,7 @@ function Rosenbrock(;
   )
 end
 
-type RosenbrockState{T,N} <: State
+mutable struct RosenbrockState{T,N} <: State
   method_name::String
   n_k::Int                    # Current iteration dimension
   x_k::Array{T,1}             # Current search coordinate

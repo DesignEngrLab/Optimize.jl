@@ -1,4 +1,5 @@
-using Optimize
+include("./src/optimize.jl")
+using .Optimize
 using Plots
 include("utils/plotting.jl")
 

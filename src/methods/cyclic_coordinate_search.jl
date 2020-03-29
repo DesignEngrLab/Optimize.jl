@@ -1,4 +1,4 @@
-immutable CyclicCoordinateSearch <: Optimizer
+struct CyclicCoordinateSearch <: Optimizer
   use_acceleration::Bool
 end
 
@@ -6,7 +6,7 @@ function CyclicCoordinateSearch(; use_acceleration = true)
   return CyclicCoordinateSearch(use_acceleration)
 end
 
-type CyclicCoordinateSearchState{T} <: State
+mutable struct CyclicCoordinateSearchState{T} <: State
   method_name::String
   n_k::Int
   x_k::Array{T}
@@ -15,7 +15,7 @@ type CyclicCoordinateSearchState{T} <: State
   d_k::Array{T}
 end
 
-function initial_state{T}(method::CyclicCoordinateSearch, problem::Problem{T})
+function initial_state{T}(method::CyclicCoordinateSearch, problem::Problem{T}) where {T<:Number}
   n = problem.dimensions
   return CyclicCoordinateSearchState(
     "Cyclic Coordinate Search",

@@ -1,4 +1,4 @@
-immutable RandomHillClimbing <: Optimizer
+struct RandomHillClimbing <: Optimizer
   step_sizes::Array{Real,1}
   max_failed_neighbors::Int
 end
@@ -12,7 +12,7 @@ function RandomHillClimbing(;
   )
 end
 
-type RandomHillClimbingState{T} <: State
+mutable struct RandomHillClimbingState{T} <: State
   method_name::String
   x_k::Array{T,1}                # Current search coordinate
   f_k::T                         # Current coordinate's objective function value
