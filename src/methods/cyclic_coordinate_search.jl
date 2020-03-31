@@ -15,7 +15,7 @@ mutable struct CyclicCoordinateSearchState{T} <: State
   d_k::Array{T}
 end
 
-function initial_state{T}(method::CyclicCoordinateSearch, problem::Problem{T}) where {T<:Number}
+function initial_state(method::CyclicCoordinateSearch, problem::Problem{T}) where {T<:Number}
   n = problem.dimensions
   return CyclicCoordinateSearchState(
     "Cyclic Coordinate Search",
@@ -27,9 +27,9 @@ function initial_state{T}(method::CyclicCoordinateSearch, problem::Problem{T}) w
   )
 end
 
-function update_state!{T}(method::CyclicCoordinateSearch, problem::Problem{T}, iteration::Int, state::CyclicCoordinateSearchState)
+function update_state!(method::CyclicCoordinateSearch, problem::Problem{T}, iteration::Int, state::CyclicCoordinateSearchState) where {T<:Number}
   n, n_k = problem.dimensions, state.n_k
-  @fields x_k, x_last, x_acc, d_k = state
+  x_k, x_last, x_acc, d_k = state.x_k, state.x_last, state.x_acc, state.d_k
 
   # Keep track of last iteration's coordinate
   copy!(x_last, x_k)

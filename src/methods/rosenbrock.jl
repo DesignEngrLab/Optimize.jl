@@ -1,3 +1,5 @@
+using LinearAlgebra
+
 struct Rosenbrock <: Optimizer
   initial_step_size::Real
   forward_step_multiplier::Real
@@ -18,7 +20,7 @@ function Rosenbrock(;
   )
 end
 
-mutable struct RosenbrockState{T,N} <: State
+mutable struct RosenbrockState{T,N} <: State where{T<:Number, N<:Integer}
   method_name::String
   n_k::Int                    # Current iteration dimension
   x_k::Array{T,1}             # Current search coordinate
@@ -30,7 +32,7 @@ mutable struct RosenbrockState{T,N} <: State
   trial_results::BitArray{2}  # Record of success/failures in each direction
 end
 
-function initial_state{T}(method::Rosenbrock, problem::Problem{T})
+function initial_state(method::Rosenbrock, problem::Problem{T}) where {T<:Number}
   n = problem.dimensions
   return RosenbrockState(
     "Rosenbrock's Method",
@@ -39,16 +41,17 @@ function initial_state{T}(method::Rosenbrock, problem::Problem{T})
     problem.objective(problem.x_initial),
     fill(convert(T, method.initial_step_size), n),
     method.initial_step_size,
-    eye(n),
-    zeros(problem.x_initial),
+    Matrix{T}(I,n,n),
+    zeros(T, size(problem.x_initial)),
     falses(2, n)
   )
 end
 
-function update_state!{T}(method::Rosenbrock, problem::Problem{T}, iteration::Int, state::RosenbrockState)
+function update_state!(method::Rosenbrock, problem::Problem{T}, iteration::Int, state::RosenbrockState) where{T<:Number}
   f, n = problem.objective, problem.dimensions
-  @fields x_k, h_k, a_k, d_k, trial_results = state
-
+  x_k, h_k, a_k, d_k = state.x_k, state.h_k, state.a_k, state.d_k
+  trial_results = state.trial_results
+  
   while !all(trial_results)
     x_trial = x_k + h_k[state.n_k] * d_k[:,state.n_k]
     f_trial = f(x_trial)
@@ -94,7 +97,7 @@ function update_state!{T}(method::Rosenbrock, problem::Problem{T}, iteration::In
   end
 
   # Start the next stage with a step size based on the last distance travelled
-  state.h_ave = 1/n * sum(abs(a_k))
+  state.h_ave = 1/n * sum(abs.(a_k))
   fill!(h_k, state.h_ave)
   fill!(a_k, 0)
 
@@ -105,7 +108,7 @@ function update_state!{T}(method::Rosenbrock, problem::Problem{T}, iteration::In
   return update_state!(method, problem, iteration, state)
 end
 
-function has_converged{T}(method::Rosenbrock, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::RosenbrockState)
+function has_converged(method::Rosenbrock, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::RosenbrockState) where {T<:Number}
   # Convergence is based on step size
   return state.h_ave < method.ϵ_h
 end

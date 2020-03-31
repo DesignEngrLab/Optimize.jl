@@ -1,5 +1,5 @@
-immutable ExhaustiveSearch <: Optimizer
-  search_space::Union{FloatRange,Array{FloatRange,1}}
+struct ExhaustiveSearch <: Optimizer
+  search_space::Union{StepRangeLen,Array{StepRangeLen,1}}
 end
 
 function ExhaustiveSearch(;
@@ -7,9 +7,9 @@ function ExhaustiveSearch(;
   return ExhaustiveSearch(search_space)
 end
 
-type ExhaustiveSearchState{T} <: State
+mutable struct ExhaustiveSearchState{T} <: State
   method_name::String
-  grid::Array{FloatRange{T},1}  # Search grid, array of ranges for each dim
+  grid::Array{StepRange{T},1}  # Search grid, array of ranges for each dim
   i_k::Array{Int,1}             # Current grid index
   x_k::Array{T,1}               # Corresponding search coordinate
   x_best::Array{T,1}            # Current best coord
@@ -17,7 +17,7 @@ type ExhaustiveSearchState{T} <: State
   is_complete::Bool             # Whether every gridpoint has been evaluated
 end
 
-function initial_state{T}(method::ExhaustiveSearch, problem::Problem{T})
+function initial_state(method::ExhaustiveSearch, problem::Problem{T}) where {T<:Number}
   n = problem.dimensions
   grid = if isa(method.search_space, Range)
     fill(method.search_space, n)
@@ -36,7 +36,7 @@ function initial_state{T}(method::ExhaustiveSearch, problem::Problem{T})
   )
 end
 
-function update_state!{T}(method::ExhaustiveSearch, problem::Problem{T}, iteration::Int, state::ExhaustiveSearchState)
+function update_state!(method::ExhaustiveSearch, problem::Problem{T}, iteration::Int, state::ExhaustiveSearchState) where {T<:Number}
   f, n = problem.objective, problem.dimensions
   i_k, x_k = state.i_k, state.x_k
   grid = state.grid
@@ -66,7 +66,7 @@ function update_state!{T}(method::ExhaustiveSearch, problem::Problem{T}, iterati
   return (state.x_best, state.f_best)
 end
 
-function has_converged{T}(method::ExhaustiveSearch, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::ExhaustiveSearchState)
+function has_converged(method::ExhaustiveSearch, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::ExhaustiveSearchState) where {T<:Number}
   # There is no true 'convergence', just stop when all points
   # in the grid have been evaluated
   return state.is_complete

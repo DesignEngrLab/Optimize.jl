@@ -1,6 +1,5 @@
 function plot_range(f, x, y, n = 100, l = 50)
-  x = linspace(x[1], x[2], n)
-  y = linspace(y[1], y[2], n)
+  x = range(y[1], y[2], length = n)
   p = contour(x, y, (x, y) -> f([x, y]); levels = l)
   plot!(p)
 end

@@ -1,10 +1,19 @@
-include("./src/optimize.jl")
+includePath = "src\\optimize.jl"
+# the following line converts the relative path to absolute. This is to get around
+# a bug in Julia-VSCode, but the fix is not likely far off (https://github.com/julia-vscode/julia-vscode/issues/1080)
+includePath = joinpath(@__DIR__, includePath)
+#####
+include(includePath)
 using .Optimize
-using Plots
-include("utils/plotting.jl")
+using Plots, LinearAlgebra
+includePath = "utils\\plotting.jl"
+#### again, temp fix
+includePath = joinpath(@__DIR__, includePath)
+#####
+include(includePath)
 
 # Replace this with whichever plotting backend you prefer
-plotlyjs()
+#plotlyjs()
 
 # Choose an example problem, see src/test_problems.jl
 example = test_problems[:easom]
@@ -18,7 +27,7 @@ opts = Options(store_trace = true)
 # Run the search
 result = optimize(method, prob, opts)
 
-# Print the results
+# Print the result
 println(result)
 
 # Plot the objective function contours and results

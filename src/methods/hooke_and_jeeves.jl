@@ -25,7 +25,7 @@ mutable struct HookeAndJeevesState{T,N} <: State
   d_k::Array{T,N}
 end
 
-function initial_state{T}(method::HookeAndJeeves, problem::Problem{T})
+function initial_state(method::HookeAndJeeves, problem::Problem{T}) where {T<:Number}
   n = problem.dimensions
   return HookeAndJeevesState(
     "Hooke and Jeeves",
@@ -34,11 +34,11 @@ function initial_state{T}(method::HookeAndJeeves, problem::Problem{T})
     problem.objective(problem.x_initial),
     copy(problem.x_initial),
     copy(problem.x_initial),
-    eye(n)
+    Matrix{T}(I,n,n)
   )
 end
 
-function update_state!{T}(method::HookeAndJeeves, problem::Problem{T}, iteration::Int, state::HookeAndJeevesState)
+function update_state!(method::HookeAndJeeves, problem::Problem{T}, iteration::Int, state::HookeAndJeevesState) where {T<:Number}
   f, n = problem.objective, problem.dimensions
   x_k, x_b = state.x_k, state.x_b
 
@@ -85,7 +85,7 @@ function update_state!{T}(method::HookeAndJeeves, problem::Problem{T}, iteration
   return update_state!(method, problem, iteration, state)
 end
 
-function has_converged{T}(method::HookeAndJeeves, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::HookeAndJeevesState)
+function has_converged(method::HookeAndJeeves, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::HookeAndJeevesState) where {T<:Number}
   # Convergence is based on step size
   return state.h_k < method.ϵ_h
 end

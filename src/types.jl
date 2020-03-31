@@ -27,7 +27,7 @@ struct Problem{T}
   dimensions::Int
 end
 
-function Problem{T}(objective::Function, x_initial::Array{T}) where {T<:Number}
+function Problem(objective::Function, x_initial::Array{T}) where {T<:Number}
    Problem(objective, x_initial, length(x_initial))
  end
 
@@ -45,6 +45,7 @@ function SearchTrace()
 end
 
 struct Results{T} 
+  method_name::String
   x_initial::Array{T}
   minimizer::Array{T}
   minimum::T
@@ -63,15 +64,15 @@ struct TestProblem{T}
 end
 
 function Base.show(io::IO, results::Results)
-  @println io "Optimization Results\n"
-  @println io " * Algorithm: %s\n" results.method_name
-  @println io " * Minimizer: [%s]\n" join(results.minimizer, ",")
-  @println io " * Minimum: %e\n" results.minimum
-  @println io " * Iterations: %d\n" results.iterations
-  @println io " * Converged: %s\n" results.converged ? "true" : "false"
-  @println io " * Elapsed time: %f seconds" results.elapsed_time
+  @show io "Optimization Results\n"
+  @show io " * Algorithm: %s\n" results.method_name
+  @show io " * Minimizer: [%s]\n" join(results.minimizer, ",")
+  @show io " * Minimum: %e\n" results.minimum
+  @show io " * Iterations: %d\n" results.iterations
+  @show io " * Converged: %s\n" results.converged ? "true" : "false"
+  @show io " * Elapsed time: %f seconds" results.elapsed_time
   if results.trace != nothing
-    @println io "\n * Objective Function Calls: %d" length(results.trace.evaluations)
+    @show io "\n * Objective Function Calls: %d" length(results.trace.evaluations)
   end
   return
 end

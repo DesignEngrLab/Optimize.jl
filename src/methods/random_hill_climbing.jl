@@ -22,24 +22,26 @@ mutable struct RandomHillClimbingState{T} <: State
   last_neighbor::Int             # Last neighbor visited
 end
 
-function initial_state{T}(method::RandomHillClimbing, problem::Problem{T})
+function initial_state(method::RandomHillClimbing, problem::Problem{T}) where {T<:Number}
   return RandomHillClimbingState(
     "Random Hill Climbing",
     copy(problem.x_initial),
     problem.objective(problem.x_initial),
-    zeros(problem.x_initial),
+    zeros(T, size(problem.x_initial)),
     zeros(Int, 1),
     min(method.max_failed_neighbors, 2*problem.dimensions*length(method.step_sizes) - 1),
     -1
   )
 end
 
-function update_state!{T}(method::RandomHillClimbing, problem::Problem{T}, iteration::Int, state::RandomHillClimbingState)
+function update_state!(method::RandomHillClimbing, problem::Problem{T}, iteration::Int, state::RandomHillClimbingState) where {T<:Number}
   f, n = problem.objective, problem.dimensions
-  @fields x_k, x_n, f_k = state
-  @fields failed_neighbors, max_failed_neighbors, last_neighbor = state
+  x_k, x_n, f_k = state.x_k, state.x_n, state.f_k
   step_sizes = method.step_sizes
   n_steps = length(step_sizes)
+  failed_neighbors = state.failed_neighbors
+  max_failed_neighbors = state.max_failed_neighbors
+  last_neighbor = state.last_neighbor
 
   # Reverse the direction of the last neighbor
   last_neighbor += iseven(last_neighbor) ? 1 : -1
@@ -79,7 +81,7 @@ function update_state!{T}(method::RandomHillClimbing, problem::Problem{T}, itera
   return (x_k, state.f_k)
 end
 
-function has_converged{T}(method::RandomHillClimbing, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::RandomHillClimbingState)
+function has_converged(method::RandomHillClimbing, x::Tuple{Array{T},Array{T}}, f::Tuple{T,T}, options::Options, state::RandomHillClimbingState) where {T<:Number}
   # Convergence is simply when the max number of attempted neighboring
   # coordinates is reached
   return length(state.failed_neighbors) == state.max_failed_neighbors
