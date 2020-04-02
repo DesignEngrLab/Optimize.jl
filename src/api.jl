@@ -87,3 +87,4 @@ end
 function has_converged(x_cur::Array{T}, x_prev::Array{T}, options::Options) where {T<:Number}
   return norm(x_cur - x_prev) < options.ϵ_x
 end
+
